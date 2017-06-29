@@ -14,9 +14,6 @@ app.controller('TimelineController', ['$scope', function ($scope) {
 
     timeline.posts = [];
 
-
-
-
     // User login function
     timeline.login = function () {
         // Set isConnected to true
@@ -29,7 +26,6 @@ app.controller('TimelineController', ['$scope', function ($scope) {
         timeline.socket.emit('login', timeline.currentUser);
 
         timeline.socket.on('allPosts', function (posts) {
-            console.log(posts);
             timeline.posts = posts;
             $scope.$apply();
         });

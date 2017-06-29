@@ -9,7 +9,7 @@ app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Array with all posts
-this.allPosts = [];
+let allPosts = [];
 
 io.on('connection', socket => {
 
@@ -26,9 +26,7 @@ io.on('connection', socket => {
         // Emit socket with new user
         socket.broadcast.emit('newUser', currentUser);
 
-        console.log(this.allPosts);
-
-        socket.emit('allPosts', this.allPosts);
+        socket.emit('allPosts', allPosts);
     });
 
     // Listen event for add a post
@@ -39,28 +37,32 @@ io.on('connection', socket => {
         io.emit('newPost', post);
 
         // Push the new post to posts array
-        this.allPosts.push(post);
-        console.log(this.allPosts);
+        allPosts.push(post);
     });
 
     // Listen event for delete a post
     socket.on('deletePost', post => {
         // Find the post with given id and remove it from posts array
-        let index = this.allPosts.findIndex(i => i._id === post._id);
+        let index = allPosts.findIndex(i => i._id === post._id);
         if (index > -1) {
-            this.allPosts.splice(index, 1);
+            allPosts.splice(index, 1);
         }
         // Emit the deleted post
         io.emit('deletePost', post);
     });
 
     socket.on('favoritePost', post => {
-        let index = post.favorites.findIndex(i => i._id === currentUser._id);
-        console.log(index);
-        if (index === -1) {
+        // Add current user to post favorites
+        let currentPostIndex = post.favorites.findIndex(i => i._id === currentUser._id);
+        if (currentPostIndex === -1) {
             post.favorites.push(currentUser);
         }
-        console.log(post);
+
+        let allPostsIndex = allPosts.findIndex(i => i._id === post._id);
+        if (allPostsIndex > -1) {
+            allPosts[allPostsIndex].favorites = post.favorites;
+        }
+
         io.emit('favoritePost', post);
     })
 });

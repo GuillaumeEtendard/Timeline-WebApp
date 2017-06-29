@@ -91,7 +91,7 @@
                             </a>
                             <div class="tabs is-small">
                                 <ul>
-                                    <li ng-repeat="user in post.favorites"><a>{{ user.username }}</a></li>
+                                    <li ng-repeat="user in post.favorites track by $index"><a>{{ user.username }}</a></li>
                                 </ul>
                             </div>
                         </div>
